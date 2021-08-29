@@ -62,7 +62,7 @@ int main (int argc, char** argv) {
             }
             try {
                 sample_rate = std::stoi (argv[1]);
-            } catch (std::exception& e) {
+            } catch (const std::exception& e) {
                 std::cerr << "Sample rate must be integer." << std::endl;
                 usage (program);
                 return 1;
@@ -77,7 +77,7 @@ int main (int argc, char** argv) {
             }
             try {
                 tempo = std::stoi (argv[1]);
-            } catch (std::exception& e) {
+            } catch (const std::exception& e) {
                 std::cerr << "Tempo must be integer." << std::endl;
                 usage (program);
                 return 1;
@@ -98,6 +98,8 @@ int main (int argc, char** argv) {
     Environment env (sample_rate, tempo, b24);
     parse (infile.c_str (), &env);
     env.process_samples ();
-    env.get_module ("Song")->evaluate (&env);
-    env.export_track (outfile);
+    try {
+        env.get_module ("Song")->evaluate (&env);
+        env.export_track (outfile);
+    } catch (const std::exception& e) { std::cerr << e.what () << std::endl; }
 }

@@ -59,7 +59,7 @@ void open_file (const char* file_name) {
 	FILE *file;
 	try {
 		file = fopen(file_name, "r");
-	} catch (std::exception& e) {
+	} catch (const std::exception& e) {
 		std::cerr << file_name << " not found. Ignoring." << std::endl;
 		return;
 	}

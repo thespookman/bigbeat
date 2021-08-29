@@ -102,7 +102,7 @@ void parse(const char* file_name, Environment* _env) {
 	FILE *file;
 	try {
 		file=fopen(file_name,"r");
-	} catch (std::exception& e) {
+	} catch (const std::exception& e) {
 		throw File_Not_Found();
 	}
 	if(!file) throw File_Not_Found();

@@ -30,7 +30,7 @@ void Module::evaluate (Environment* env) {
             for (std::string s : submodules) {
                 try {
                     env->get_module (s)->evaluate (env);
-                } catch (std::exception& e) { std::cerr << e.what () << std::endl; }
+                } catch (const std::exception& e) { std::cerr << e.what () << std::endl; }
             }
     else
         pattern->evaluate (speed, env);

@@ -40,12 +40,12 @@ class Environment {
     ~Environment ();
 };
 
-class Instrument_Not_Found : std::runtime_error {
+class Instrument_Not_Found : public std::runtime_error {
   public:
     explicit Instrument_Not_Found (std::string module);
 };
 
-class Module_Not_Found : std::runtime_error {
+class Module_Not_Found : public std::runtime_error {
   public:
     explicit Module_Not_Found (std::string module);
 };

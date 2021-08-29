@@ -17,7 +17,7 @@ void Environment::add_beat (std::string instrument, int granularity, int positio
     try {
         get_instrument (instrument)
             ->add_beat (track_position + (position * (tempo / granularity)), velocity);
-    } catch (std::exception& e) { std::cerr << e.what () << std::endl; }
+    } catch (const std::exception& e) { std::cerr << e.what () << std::endl; }
 }
 
 void Environment::add_module (std::string name, Module* module) {
