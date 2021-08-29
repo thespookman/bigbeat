@@ -24,4 +24,4 @@ $(OUTPUT): $(SRC)
 
 .PHONY: clean
 clean:
-	rm parser.tab.cc *.hh lexer.yy.c parser.output $(OUTPUT)
+	rm -f parser.tab.cc *.hh lexer.yy.c parser.output $(OUTPUT)
