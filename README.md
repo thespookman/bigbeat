@@ -11,6 +11,7 @@ Run `make all`. Only uses standard C++17 libraries, so should just work _fingers
 ### Options
 ```
         --help           - Display this help and exit
+	--deps           - Also create a dependency file for make	
         -i beat_file     - File to read for beat data (mandatory)
         -o out_file      - File to output WAV to (default is output.wav)
         -s sample_rate   - Sets sample rate of output (default is 44100)

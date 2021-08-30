@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class Module;
 class Instrument;
@@ -16,20 +17,22 @@ typedef std::unordered_map<std::string, Instrument*> Instrument_Map;
 
 class Environment {
   private:
-    Module_Map     modules;
-    Instrument_Map instruments;
-    int            frequency;
-    int            tempo;
-    long           track_position;
-    bool           b24;
+    Module_Map               modules;
+    Instrument_Map           instruments;
+    int                      frequency;
+    int                      tempo;
+    long                     track_position;
+    bool                     b24;
+    std::vector<std::string> dependencies;
 
   public:
     Environment ();
     Environment (int output_frequency, int _tempo, bool _b24);
     void add_beat (std::string instrument, int granularity, int position, unsigned char velocity);
-    void add_module (std::string name, Module* module);
+    void add_dependency (std::string file_name);
     void add_instrument (std::string name, Instrument* instrument);
-    void export_track (std::string file_name);
+    void add_module (std::string name, Module* module);
+    void export_track (std::string file_name, bool make_dependencies);
     template <typename Word>
     std::ostream& write_word (std::ostream& outs, Word value, unsigned size = sizeof (Word));
     Module*       get_module (std::string name);

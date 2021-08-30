@@ -20,15 +20,7 @@ void Environment::add_beat (std::string instrument, int granularity, int positio
     } catch (const std::exception& e) { std::cerr << e.what () << std::endl; }
 }
 
-void Environment::add_module (std::string name, Module* module) {
-    Module_Map::iterator it = modules.find (name);
-    if (it == modules.end ())
-        modules.insert ({name, module});
-    else {
-        delete it->second;
-        it->second = module;
-    }
-}
+void Environment::add_dependency (std::string file_name) { dependencies.push_back (file_name); }
 
 void Environment::add_instrument (std::string name, Instrument* instrument) {
     Instrument_Map::iterator it = instruments.find (name);
@@ -40,7 +32,17 @@ void Environment::add_instrument (std::string name, Instrument* instrument) {
     }
 }
 
-void Environment::export_track (std::string file_name) {
+void Environment::add_module (std::string name, Module* module) {
+    Module_Map::iterator it = modules.find (name);
+    if (it == modules.end ())
+        modules.insert ({name, module});
+    else {
+        delete it->second;
+        it->second = module;
+    }
+}
+
+void Environment::export_track (std::string file_name, bool make_dependencies) {
     long    length = 0;
     uint8_t bytes  = b24 ? 3 : 2;
     for (std::pair<std::string, Instrument*> i : instruments) {
@@ -58,6 +60,7 @@ void Environment::export_track (std::string file_name) {
         }
     }
     std::ofstream of (file_name, std::ios::binary);
+    if (!of.is_open ()) throw File_Not_Open (file_name);
     of << "RIFF----WAVEfmt ";                  // (chunk size to be filled in later)
     write_word (of, 16, 4);                    // no extension data
     write_word (of, 1, 2);                     // PCM - integer samples
@@ -79,6 +82,13 @@ void Environment::export_track (std::string file_name) {
     of.seekp (0 + 4);
     write_word (of, file_length - 8, 4);
     of.close ();
+    if (!make_dependencies) return;
+    std::ofstream od (file_name + ".d");
+    if (!od.is_open ()) throw File_Not_Open (file_name + ".d");
+    od << file_name << ": ";
+    for (std::string dep : dependencies) od << dep << " ";
+    od << std::endl;
+    od.close ();
 }
 
 template <typename Word>

@@ -45,7 +45,7 @@ yylloc->step();
 [0-9]+				{ yylval->i = atoi(yytext); return token::NUMBER;	}
 
 include[ \t]+			{ BEGIN(FILENAME);		}
-<FILENAME>.*			{ open_file(yytext); BEGIN(0);	}
+<FILENAME>.*			{ open_file(yytext); BEGIN(0); yylval->c = strdup(yytext); return token::INCLUDE;	}
 <FILENAME>\n			{ BEGIN(0); ++yylineno; yycolumn=0;		}
 
 

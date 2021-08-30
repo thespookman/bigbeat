@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <vector>
 
 void usage (const std::string& program) {
     std::cout << program << " - Command line drum machine" << std::endl
@@ -14,6 +15,7 @@ void usage (const std::string& program) {
               << std::endl
               << "Options:" << std::endl
               << "\t--help\t\t\t- Display this help and exit" << std::endl
+              << "\t--deps\t\t\t- Create a list of dependencies for make" << std::endl
               << "\t-i <beat_file>\t\t- File to read for beat data" << std::endl
               << "\t-o <out file>\t\t- File to output WAV to" << std::endl
               << "\t-s <sample rate>\t- Sets sample rate of output" << std::endl
@@ -25,14 +27,19 @@ int main (int argc, char** argv) {
     std::string program = argv[0];
     argv                = &argv[1];
     --argc;
+    bool        b24         = false;
+    bool        deps        = false;
     std::string infile      = "";
     bool        inset       = false;
+    std::string outfile     = "output.wav";
     int         sample_rate = 44100;
     int         tempo       = 80;
-    std::string outfile     = "output.wav";
-    bool        b24         = false;
     while (argc) {
-        if (!strcmp (argv[0], "--help")) {
+        if (!strcmp (argv[0], "--deps")) {
+            deps = true;
+            argv = &argv[1];
+            --argc;
+        } else if (!strcmp (argv[0], "--help")) {
             usage (program);
             return 0;
         } else if (!strcmp (argv[0], "-i")) {
@@ -100,6 +107,6 @@ int main (int argc, char** argv) {
     env.process_samples ();
     try {
         env.get_module ("Song")->evaluate (&env);
-        env.export_track (outfile);
+        env.export_track (outfile, deps);
     } catch (const std::exception& e) { std::cerr << e.what () << std::endl; }
 }

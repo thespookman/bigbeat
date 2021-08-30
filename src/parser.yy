@@ -25,7 +25,7 @@ Environment* env;
 	int i;
 };
 
-%token <c> STRING 
+%token <c> STRING INCLUDE
 %token <i> NUMBER
 %token ';' ':' '.' '{' '}'
 
@@ -50,15 +50,17 @@ file		: define file				{}
 define		: instrument				{}
        		| pattern_def				{}
 		| module				{}
+		| INCLUDE				{ env->add_dependency(std::string($1)); free($1);	}
 		;
 
-instrument	: STRING NUMBER STRING ';'		{ if($2>255) env->add_instrument(std::string($1), new Instrument(255, std::string($3)));
+instrument	: STRING NUMBER STRING ';'		{ if($2>255) env->add_instrument(std::string($1), new Instrument(255, std::string($3))); 
 	   							else env->add_instrument(std::string($1), new Instrument($2, std::string($3)));
-								free($1); free($3);	}
+								free($1); free ($3);
+							}
 	   	| error ';' 				{ error(@1, "Bad instrument definition");		}
 	   	;
 
-pattern_def	: STRING NUMBER '{' pattern_lines '}'	{ env->add_module(std::string($1), new Module($2, $4));	free($1);	}
+pattern_def	: STRING NUMBER '{' pattern_lines '}'	{ env->add_module(std::string($1), new Module($2, $4)); free($1);	}
       		;
 
 pattern_lines	: pattern_line pattern_lines		{ $1->add($2); delete $2; $$=$1;	}
@@ -87,7 +89,7 @@ module_lines	: module_lines module_line		{ $1->add($2); delete $2; $$=$1;}
 		;
 
 module_line	: STRING NUMBER	';'			{ $$ = new Module(std::string($1), $2); free($1);	}
-	    	| STRING ';'				{ $$ = new Module(std::string($1), 1); free($1);	}
+	    	| STRING ';'				{ $$ = new Module(std::string($1), 1); free($1); 	}
 		| error ';'				{ error(@1, "Bad module line"); $$ = new Module();	}
 		| tempo_line				{ $$ = new Module($1);					}
 		;
